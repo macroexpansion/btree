@@ -8,13 +8,19 @@ fn main() {
     tree.insert(1, 1);
     tree.insert(4, 4);
 
-    let root = tree.root();
-    println!("{root:?}");
-    for e in &root.children {
-        let child = unsafe { e.as_ref() };
-        println!("{child:?}");
-    }
+    // let root = tree.root();
+    // println!("{root:?}");
+    // for e in &root.children {
+    //     let child = unsafe { e.as_ref() };
+    //     println!("{child:?}");
+    // }
 
+    let value = tree.get(1);
+    println!("{value:?}");
+    let value = tree.get(2);
+    println!("{value:?}");
+    let value = tree.get(3);
+    println!("{value:?}");
     let value = tree.get(4);
     println!("{value:?}");
 }

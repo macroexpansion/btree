@@ -93,7 +93,7 @@ impl Node {
             return None;
         }
 
-        let i = self.keys.partition_point(|&x| x < key);
+        let i = self.keys.partition_point(|&x| x <= key);
         self.keys.insert(i, key);
         self.values.insert(i, value);
 
@@ -115,7 +115,22 @@ impl Node {
     }
 
     pub fn get(&self, key: usize) -> Option<&usize> {
-        let i = self.keys.binary_search(&key).ok();
-        i.map(|i| self.values.get(i)).unwrap_or_default()
+        let mut nodes = Vec::new();
+        nodes.push(NonNull::from(self));
+
+        while !nodes.is_empty() {
+            let node: NonNull<Node> = nodes.pop().unwrap();
+            let node: &Node = unsafe { node.as_ref() };
+
+            if node.is_leaf {
+                let i = node.keys.binary_search(&key).ok();
+                return i.map(|i| node.values.get(i)).unwrap_or_default();
+            }
+
+            let i = self.keys.partition_point(|&x| x <= key);
+            nodes.push(node.children[i]);
+        }
+
+        None
     }
 }
