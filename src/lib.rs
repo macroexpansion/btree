@@ -65,8 +65,7 @@ impl Node {
     }
 
     fn insert_parent(mut left: NonNull<Node>, mut right: NonNull<Node>) -> Option<NonNull<Node>> {
-        let left_node = unsafe { left.as_mut() };
-        let right_node = unsafe { right.as_mut() };
+        let (left_node, right_node) = unsafe { (left.as_mut(), right.as_mut()) };
 
         let mut parent = left_node.parent.unwrap_or_else(|| {
             let mut node = Node::new(left_node.order);
@@ -115,12 +114,10 @@ impl Node {
     }
 
     pub fn get(&self, key: usize) -> Option<&usize> {
-        let mut nodes = Vec::new();
-        nodes.push(NonNull::from(self));
+        let mut node_ptr = NonNull::from(self);
 
-        while !nodes.is_empty() {
-            let node: NonNull<Node> = nodes.pop().unwrap();
-            let node: &Node = unsafe { node.as_ref() };
+        loop {
+            let node: &Node = unsafe { node_ptr.as_ref() };
 
             if node.is_leaf {
                 let i = node.keys.binary_search(&key).ok();
@@ -128,9 +125,7 @@ impl Node {
             }
 
             let i = self.keys.partition_point(|&x| x <= key);
-            nodes.push(node.children[i]);
+            node_ptr = node.children[i];
         }
-
-        None
     }
 }

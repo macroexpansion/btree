@@ -23,4 +23,6 @@ fn main() {
     println!("{value:?}");
     let value = tree.get(4);
     println!("{value:?}");
+    let value = tree.get(5);
+    println!("{value:?}");
 }
